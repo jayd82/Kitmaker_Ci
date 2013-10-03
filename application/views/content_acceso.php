@@ -2,7 +2,7 @@
   <div id="container" class="opacity">
     <div class="full-width">
       <div class="one-third">
-		<h2>Eres nuevo?</h2>
+		<h2>¿Eres nuevo?</h2>
         <p>Registrate <a href='<?php echo base_url()."main/registro"; ?>'>aqui</a></p>
         <br />
         <br />

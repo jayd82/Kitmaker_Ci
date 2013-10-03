@@ -17,7 +17,15 @@ class Main extends CI_Controller {
 		if($this->session->userdata('is_logged_in'))
 		{
 		
-			redirect('main/normal');
+			$this->load->model('model_usuarios');
+				
+			if($this->model_usuarios->got_level0())
+			{
+				redirect('main/admin');
+			}else
+			{
+				redirect('main/normal');
+			}
 			
 		}else
 		{
@@ -81,6 +89,62 @@ class Main extends CI_Controller {
 			redirect('main/restricted');			
 		}
 	}
+	
+	public function post_adm()
+	{
+		if($this->session->userdata('is_logged_in'))
+		{
+						
+			$this->load->view('header');
+			$this->load->view('nav');
+			$this->load->view('content_post_adm',$this->session->all_userdata());
+			$this->load->view('footer');
+		} else
+		{
+			redirect('main/restricted');			
+		}
+	}
+	
+	public function admin()
+	{
+		if($this->session->userdata('is_logged_in'))
+		{		
+			$this->load->model('model_posts');
+		
+			$data['results'] = $this->model_posts->ver_post();
+			
+			$this->load->view('header');
+			$this->load->view('nav');
+			$this->load->view('content_admin');
+			$this->load->view('posts', $data);
+			$this->load->view('posts_final');
+			$this->load->view('footer');
+		} else
+		{
+			redirect('main/restricted');			
+		}
+			
+	}
+	
+	public function borrar()
+	{
+		if($this->session->userdata('is_logged_in'))
+		{		
+			$this->load->model('model_posts');
+		
+			$data['results'] = $this->model_posts->cargar_post();
+			
+			
+			$this->load->view('header');
+			$this->load->view('nav');
+			$this->load->view('content_borrar', $data);
+			$this->load->view('footer');
+		} else
+		{
+			redirect('main/restricted');			
+		}
+			
+	}
 		
 	public function restricted()
 	{
@@ -111,7 +175,16 @@ class Main extends CI_Controller {
 			);
 			$this->session->set_userdata($data);
 			
-			redirect('main/normal');
+			
+			$this->load->model('model_usuarios');
+			
+			if($this->model_usuarios->got_level())
+			{
+				redirect('main/admin');
+			}else
+			{
+				redirect('main/normal');
+			}
 			
 		} else 
 		{
@@ -199,10 +272,21 @@ class Main extends CI_Controller {
 					
 		} else 
 		{
-			$this->load->view('header');
-			$this->load->view('nav');
-			$this->load->view('content_post', $this->session->all_userdata());
-			$this->load->view('footer');			
+			$this->load->model('model_usuarios');
+			
+			if($this->model_usuarios->got_level2())
+			{
+				$this->load->view('header');
+				$this->load->view('nav');
+				$this->load->view('content_post_adm', $this->session->all_userdata());
+				$this->load->view('footer');
+			}else
+			{
+				$this->load->view('header');
+				$this->load->view('nav');
+				$this->load->view('content_post', $this->session->all_userdata());
+				$this->load->view('footer');
+			}			
 		}
 	}
 	
@@ -222,7 +306,15 @@ class Main extends CI_Controller {
 				
 				$this->session->set_userdata($data);
 				
-				redirect('main/normal');
+				$this->load->model('model_usuarios');
+				
+				if($this->model_usuarios->got_level())
+				{
+					redirect('main/admin');
+				}else
+				{
+					redirect('main/normal');
+				}
 				
 			} else
 			{
@@ -233,7 +325,33 @@ class Main extends CI_Controller {
 			echo "<a href='".base_url()."main/registro'>C&oacute;digo de seguridad inv&aacute;lido, lo sentimos vuelva a registrarse.</a>";
 		}
 		
-	}
+	}	
+
+	public function borrar_validation()
+	{
+		$this->load->model('model_posts');
+			
+		$censurado = $this->input->post('post_id');
+			
+		$this->model_posts->ocultar_post($censurado);
+					
+		
+			$this->load->model('model_usuarios');
+			
+			if($this->model_usuarios->got_level2())
+			{
+				$this->load->view('header');
+				$this->load->view('nav');
+				$this->load->view('content_borrar', $this->session->all_userdata());
+				$this->load->view('footer');
+			}else
+			{
+				$this->load->view('header');
+				$this->load->view('nav');
+				$this->load->view('content_normal');
+				$this->load->view('footer');
+			}
+	}	
 	
 	public function validate_credentials()
 	{
@@ -248,5 +366,23 @@ class Main extends CI_Controller {
 			return false;
 		}
 	}	
+	
+	public function insert_post()
+	{
+		$this->load->model('model_posts');
 		
+		$linea = array(
+			'titulo' => '11111',
+			'usuario' => '1',
+			'cuerpo' => 'fgsdfgsdfgsdvfhvdvhdvhsdvhdsgh',
+			'visible' => '1'
+		);
+		
+		$this->model_posts->publicar_post($linea);
+		echo 'Insert ok';
+		
+		
+	}
+	
+	
 }

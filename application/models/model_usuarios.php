@@ -16,7 +16,76 @@ class model_usuarios extends CI_Model {
 			return false;
 		}
 	}
+	
+	public function got_level()
+	{
+		$this->db->where('email',$this->input->post('email'));
+		$query = $this->db->get('usuarios');
 		
+		
+		if ($query->num_rows() == 1)
+		{
+			$row = $query->row();
+			
+			if ($row->nivel)
+			{
+				return true;
+			} else
+			{
+				return false;
+			}			
+		}else 
+		{
+			return false;
+		}
+	}
+
+	public function got_level2()
+	{
+		$this->db->where('email',$this->input->post('usuario'));
+		$query = $this->db->get('usuarios');
+		
+		
+		if ($query->num_rows() == 1)
+		{
+			$row = $query->row();
+			
+			if ($row->nivel)
+			{
+				return true;
+			} else
+			{
+				return false;
+			}			
+		}else 
+		{
+			return false;
+		}
+	}	
+	
+	public function got_level0()
+	{
+		$this->db->where('email',$this->session->userdata('email'));
+		$query = $this->db->get('usuarios');
+		
+		
+		if ($query->num_rows() == 1)
+		{
+			$row = $query->row();
+			
+			if ($row->nivel)
+			{
+				return true;
+			} else
+			{
+				return false;
+			}			
+		}else 
+		{
+			return false;
+		}
+	}	
+	
 	public function add_temp_user($key)
 	{
 		$data = array(
